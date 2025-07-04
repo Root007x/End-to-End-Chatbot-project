@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Interface</title>
+    <link rel="stylesheet" href="static/chatbot.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Bangladesh Constitutional Assistant</div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <form class="chat-input" id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+
+        function appendMessage(text, sender, typing=false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}` + (typing ? ' typing' : '');
+            msgDiv.textContent = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function animateBotReply(text, callback) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot';
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            let i = 0;
+            function typeChar() {
+                if (i <= text.length) {
+                    msgDiv.textContent = text.slice(0, i);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    i++;
+                    setTimeout(typeChar, 18 + Math.random() * 30);
+                } else if (callback) {
+                    callback();
+                }
+            }
+            typeChar();
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+            appendMessage(message, 'user');
+            userInput.value = '';
+            appendMessage('Thinking...', 'bot', true);
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await response.json();
+                // Remove the 'Thinking...' message
+                chatMessages.removeChild(chatMessages.lastChild);
+                animateBotReply(data.reply);
+            } catch (err) {
+                chatMessages.removeChild(chatMessages.lastChild);
+                appendMessage('Sorry, there was an error.', 'bot');
+            }
+        });
+    </script>
+    <script>
+        window.addEventListener("beforeunload", (event) => {
+            // Use navigator.sendBeacon for a reliable background request
+            const url = "/reset";
+            const data = JSON.stringify({});
+            const blob = new Blob([data], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
+        });
+    </script>
+</body>
+</html>
