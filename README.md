@@ -1,6 +1,6 @@
 # End-to-End-Chatbot-project
 
-# Bangladesh Constitutional Assistant
+# BD Constitution & Criminal Code Assistant
 
 A web-based AI chatbot for exploring and understanding the Constitution of Bangladesh.
 
