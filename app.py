@@ -100,10 +100,14 @@ def chat():
 
 @app.route("/reset", methods = ["POST"])
 def reset():
-    user_id = session["user_id"]
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"Status" : "No user id in session"})
+    
     if user_id in user_memory:
         user_memory[user_id].clear()
-    return jsonify({"Status" : "Memory Clear"})
+    return jsonify({"Status" : "Memory Cleared"})
 
 
 if __name__ == "__main__":
