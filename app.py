@@ -68,7 +68,6 @@ def get_user_memory(user_id):
                                     memory_key="chat_history",
                                     return_messages=True
                                 )
-        print("User_memory", user_memory[user_id])
     return user_memory[user_id]
 
 
@@ -76,7 +75,6 @@ def get_user_memory(user_id):
 def home():
     if "user_id" not in session:
         session["user_id"] = str(uuid.uuid4())
-        print("Session_id",session["user_id"])
     return render_template("index.html")
 
 @app.route("/chat", methods = ["GET","POST"])
@@ -97,7 +95,6 @@ def chat():
     answer = response["answer"]
     memory.save_context({"input" : message},{"answer" : answer})
 
-    print(answer)
     return jsonify({'reply' : answer})
 
 
