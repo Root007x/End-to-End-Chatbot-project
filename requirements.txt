@@ -11,5 +11,4 @@ python-dotenv
 sentence-transformers
 flask
 gunicorn
-ipykernel
 # -e .
