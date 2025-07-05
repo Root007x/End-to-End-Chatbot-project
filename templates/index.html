@@ -20,6 +20,13 @@
         const chatForm = document.getElementById('chat-form');
         const userInput = document.getElementById('user-input');
 
+        // Ensure input is visible when keyboard opens on mobile
+        userInput.addEventListener('focus', () => {
+            setTimeout(() => {
+                userInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+
         function appendMessage(text, sender, typing=false) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${sender}` + (typing ? ' typing' : '');
